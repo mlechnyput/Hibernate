@@ -1,6 +1,12 @@
 package jm.task.core.jdbc.util;
 
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Property;
+
 import java.sql.*;
+import java.util.Properties;
 
 public class Util {
     private static final String URL = "jdbc:mysql://localhost:3306/base151";
@@ -20,5 +26,24 @@ public class Util {
             e.printStackTrace();
         }
         return connection;
+    }
+
+    public static SessionFactory toConnectHiber() {
+        SessionFactory sf = null;
+        Configuration config = new Configuration();
+        Properties prop = new Properties();
+        prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+        prop.setProperty("hibernate.connection.url", URL);
+        prop.setProperty("hibernate.connection.username", USERNAME);
+        prop.setProperty("hibernate.connection.password", PASSWORD);
+        prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        prop.setProperty("hibernate.show.sql", "true");
+        prop.setProperty("hibernate.hbm2ddl.auto", "none");
+
+        config.setProperties(prop);
+        config.addAnnotatedClass(User.class);
+        sf= config.buildSessionFactory();
+        if (!sf.isClosed()) System.out.println("соединение установлено");
+        return sf;
     }
 }
