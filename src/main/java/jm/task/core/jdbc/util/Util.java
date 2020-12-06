@@ -2,6 +2,7 @@ package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Property;
 
@@ -29,7 +30,8 @@ public class Util {
     }
 
     public static SessionFactory toConnectHiber() {
-        SessionFactory sf = null;
+
+        //конфиги
         Configuration config = new Configuration();
         Properties prop = new Properties();
         prop.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
@@ -38,11 +40,15 @@ public class Util {
         prop.setProperty("hibernate.connection.password", PASSWORD);
         prop.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         prop.setProperty("hibernate.show.sql", "true");
-        prop.setProperty("hibernate.hbm2ddl.auto", "none");
+        prop.setProperty("hibernate.hbm2ddl.auto", "update");
 
         config.setProperties(prop);
         config.addAnnotatedClass(User.class);
-        sf= config.buildSessionFactory();
+
+        StandardServiceRegistryBuilder sBuilder = new StandardServiceRegistryBuilder();
+        sBuilder.applySettings(config.getProperties());
+        SessionFactory sf = config.buildSessionFactory(sBuilder.build());
+
         if (!sf.isClosed()) System.out.println("соединение установлено");
         return sf;
     }
