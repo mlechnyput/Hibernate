@@ -30,10 +30,16 @@ public class UserDaoHibernateImpl implements UserDao {
                 "age INT(3) NOT NULL," +
                 "PRIMARY KEY (id))" +
                 "DEFAULT CHARACTER SET = utf8;";
-        session.createSQLQuery(query).executeUpdate();
-        tr.commit();
-        session.close();
-        sf.close();
+        try {
+            session.createSQLQuery(query).executeUpdate();
+            tr.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
     }
 
     @Override
@@ -42,10 +48,16 @@ public class UserDaoHibernateImpl implements UserDao {
         Session session = sf.openSession();
         tr = session.beginTransaction();
         String query = "DROP TABLE IF EXISTS base151.usertablehiber;";
-        session.createSQLQuery(query).executeUpdate();
-        tr.commit();
-        session.close();
-        sf.close();
+        try {
+            session.createSQLQuery(query).executeUpdate();
+            tr.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
     }
 
     @Override
@@ -53,11 +65,17 @@ public class UserDaoHibernateImpl implements UserDao {
         SessionFactory sf = Util.toConnectHiber();
         Session session = sf.openSession();
         tr = session.beginTransaction();
-        Serializable x = session.save(new User(name, lastName, age));
-        tr.commit();
-        System.out.println("пользователь " + name + " добавлен в базу под номером " + x);
-        session.close();
-        sf.close();
+        try {
+            Serializable x = session.save(new User(name, lastName, age));
+            tr.commit();
+            System.out.println("пользователь " + name + " добавлен в базу под номером " + x);
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
     }
 
     @Override
@@ -65,11 +83,17 @@ public class UserDaoHibernateImpl implements UserDao {
         SessionFactory sf = Util.toConnectHiber();
         Session session = sf.openSession();
         tr = session.beginTransaction();
-        User user = (User) session.get(User.class, id);
-        if (user != null) session.delete(user);
-        tr.commit();
-        session.close();
-        sf.close();
+        try {
+            User user = (User) session.get(User.class, id);
+            if (user != null) session.delete(user);
+            tr.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
     }
 
     @Override
@@ -77,11 +101,18 @@ public class UserDaoHibernateImpl implements UserDao {
         SessionFactory sf = Util.toConnectHiber();
         Session session = sf.openSession();
         tr = session.beginTransaction();
-        Criteria entity = session.createCriteria(User.class);
-        List<User> list = entity.list();
-        tr.commit();
-        session.close();
-        sf.close();
+        List<User> list = null;
+        try {
+            Criteria entity = session.createCriteria(User.class);
+            list = entity.list();
+            tr.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
         return list;
     }
 
@@ -91,9 +122,15 @@ public class UserDaoHibernateImpl implements UserDao {
         Session session = sf.openSession();
         tr = session.beginTransaction();
         String query = "DELETE FROM User";
-        session.createQuery(query).executeUpdate();
-        tr.commit();
-        session.close();
-        sf.close();
+        try {
+            session.createQuery(query).executeUpdate();
+            tr.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            tr.rollback();
+        } finally {
+            session.close();
+            sf.close();
+        }
     }
 }
